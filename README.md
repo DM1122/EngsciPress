@@ -1,0 +1,2 @@
+# EngsciPress
+The ESC190 teaching team was reminiscing about Lab 4 and dictionaries and couldn’t find the right words to describe their feelings in that moment. They ended up sitting in awkward silence for much too long and decided to change topics to the ESC190 projects. It occurred to them to seek the bright minds of the EngSci 2T3 class to create a software to help with their loss of words in critical moments.
