@@ -28,13 +28,13 @@ class NGram:
         Constructs an NGram model from reddit posts. Currently only supports scraping post titles.
         '''
 
-        reddit = praw.Reddit(client_id='RjPARG19Tby6Qg',
-                            client_secret='aCdpV9DOkRCfIW2boaV-xX7SnGY',
-                            user_agent='windows:scrapper:v1.0 (by u/David_M1122)')
+        # reddit = praw.Reddit(client_id='RjPARG19Tby6Qg',
+        #                     client_secret='aCdpV9DOkRCfIW2boaV-xX7SnGY',
+        #                     user_agent='windows:scrapper:v1.0 (by u/David_M1122)')
 
-        scrape = []
-        for submission in reddit.subreddit(sub).hot(limit=50):
-            scrape.append(submission.title)
+        # scrape = []
+        # for submission in reddit.subreddit(sub).hot(limit=50):
+        #     scrape.append(submission.title)
 
         # string = scrape[10]
         # print('Original:',string)
@@ -43,8 +43,33 @@ class NGram:
         self.feed(string)
 
 
-    def generate(self, count):
+    def generate(self, seed=None, length=12):
+        '''
+        Generates a string of words based on model probabilities.
+        '''
+
+        if seed == None:
+            tokens = [gram[0] for gram in self.model]
+            seed = random.choice(tokens)
+
+        print('Seed:',seed)
+
         
+        output = [seed]
+        for i in range(length):
+            choices, data =  [(gram, data) for gram, data in self.model.items() if gram[0] == seed]
+            print('choices',choices)
+
+            grams = [choice[0] for choice in choices]
+            print('grams',grams)
+            
+            
+            token = random.choices([], weights=data['prob'], k=1)
+            output.append()
+            seed = token
+
+
+
         return output
 
 
@@ -91,3 +116,7 @@ if __name__ == '__main__':
 
     print(model)
     print(model.model)
+
+    output = model.generate(seed='Hello')
+
+    print(output)
