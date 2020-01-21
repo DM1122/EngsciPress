@@ -2,7 +2,7 @@ import praw
 import random
 
 
-class Dicktionary:
+class Corpus:
     
     def __init__(self):
         pass
@@ -32,38 +32,6 @@ class Dicktionary:
         pass
 
 
-class RedditGram:
-    '''
-    An NGram structure.
-    '''
-
-    def __init__(self, gram, dictionary):
-        self.gram = gram
-        self.dictionary = dictionary    # a Dicktionary structure composed of allowable words
-        
-
-    @classmethod
-    def build(cls, sub, dictionary):
-        pass
-        # return cls(gram, dictionary)
-
-
-
-    def generate(self, count):
-        pass
-        # return output
-
-
-
-
-
-
 
 if __name__ == '__main__':
-    reddit = praw.Reddit(client_id='RjPARG19Tby6Qg',
-                        client_secret='aCdpV9DOkRCfIW2boaV-xX7SnGY',
-                        user_agent='windows:scrapper:v1.0 (by u/David_M1122)')
-
-    sentences = []
-    for submission in reddit.subreddit('casualconversation').hot(limit=50):
-        sentences.append(submission.title)
+    pass
