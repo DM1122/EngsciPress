@@ -14,7 +14,8 @@ class NGram:
 
 
     def __str__(self):
-        out = 'NGram Size: {}'.format(self.getSize())
+        out = 'NGram Size: {}'.format(
+            self.getSize())
 
         return out
 
@@ -23,18 +24,21 @@ class NGram:
         return len(self.model)
 
 
-    def buildFromReddit(self, sub):
+    def buildFromReddit(self, sub, limit):
         '''
         Constructs an NGram model from reddit posts. Currently only supports scraping post titles.
         '''
+
         print('Building model from Reddit')
 
         reddit = praw.Reddit(client_id='RjPARG19Tby6Qg',
                              client_secret='aCdpV9DOkRCfIW2boaV-xX7SnGY',
                              user_agent='windows:scrapper:v1.0 (by u/David_M1122)')
 
+        print('got reddit instance')
         scrape = []
-        for submission in reddit.subreddit(sub).hot(limit=100):
+        for submission in reddit.subreddit(sub).hot(limit=limit):
+            print('Scrapping')
             scrape.append(submission.title)
 
         print('Feeding model')
@@ -57,8 +61,10 @@ class NGram:
 
         output = [seed]
         for i in range(length):
-            
             choices =  [(gram, data['prob']) for gram, data in self.model.items() if gram[0] == seed]
+            
+            if not choices:
+                break
 
             grams, probs = zip(*choices)
             
@@ -105,13 +111,29 @@ class NGram:
         self.updateProbs()
 
 
+    def prune(self):
+        '''
+        Prunes all grams in model with lowest probability. Updates probabilities.
+        '''
+        
+        print('Pruning model')
+
+        min_prob = min([data['prob'] for data in self.model.values()])
+        
+        
+        to_delete = [gram for gram in self.model if self.model[gram]['prob'] == min_prob]
+
+        for gram in to_delete:
+            del self.model[gram]
+        
+        self.updateProbs()
 
 
 
 if __name__ == '__main__':
 
-    model = NGram(n=3)
-    model.buildFromReddit('casualconversation')
+    model = NGram(n=2)
+    model.buildFromReddit(sub='casualconversation', limit=1000)
 
     print(model)
     print(model.model)
@@ -119,3 +141,8 @@ if __name__ == '__main__':
     output = model.generate()
 
     print('Output:',output)
+    model.prune()
+
+    print(model)
+    print(model.model)
+    print(model.generate())
