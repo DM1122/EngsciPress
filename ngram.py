@@ -1,4 +1,5 @@
 import praw
+import progress.bar
 import random
 
 
@@ -35,19 +36,23 @@ class NGram:
                              client_secret='aCdpV9DOkRCfIW2boaV-xX7SnGY',
                              user_agent='windows:scrapper:v1.0 (by u/David_M1122)')
 
-        print('got reddit instance')
+        bar = progress.bar.Bar('Scraping', max=limit)
         scrape = []
         for submission in reddit.subreddit(sub).hot(limit=limit):
-            print('Scrapping')
+            
             scrape.append(submission.title)
 
-        print('Feeding model')
+            bar.next()
+        bar.finish()
 
+        bar = progress.bar.Bar('Feeding model', max=len(scrape))
         for string in scrape:
             self.feed(string)
+            bar.next()
+        bar.finish()
 
 
-    def generate(self, seed=None, length=12):
+    def generate(self, seed=None, length=16):
         '''
         Generates a string of words based on model probabilities.
         '''
@@ -132,17 +137,13 @@ class NGram:
 
 if __name__ == '__main__':
 
-    model = NGram(n=2)
-    model.buildFromReddit(sub='casualconversation', limit=1000)
+    model = NGram(n=3)
+    model.buildFromReddit(sub='casualconversation', limit=500)
 
     print(model)
-    print(model.model)
-
-    output = model.generate()
-
-    print('Output:',output)
-    model.prune()
-
-    print(model)
-    print(model.model)
     print(model.generate())
+
+    model.prune()
+    print(model)
+    print(model.generate())
+
