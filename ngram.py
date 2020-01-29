@@ -136,14 +136,9 @@ class NGram:
 
 
 if __name__ == '__main__':
-
-    model = NGram(n=3)
+    model = NGram(n=2)
     model.buildFromReddit(sub='casualconversation', limit=500)
 
-    print(model)
-    print(model.generate())
-
-    model.prune()
     print(model)
     print(model.generate())
 

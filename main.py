@@ -1,37 +1,25 @@
 import praw
 import random
 
-
-class Corpus:
-    
-    def __init__(self):
-        pass
-
-    @classmethod
-    def build(cls, file_name):
-        '''
-        Build word dictionary from text file.
-        '''
-        pass
-        # return cls(...)
-    
-    
-    def search(self, query):
-        pass
+import sys
+sys.path.append('C:\\Users\\DMara\\Documents\\_Workbench')
+from Workspace import workspacelib
+from Forest import forest
 
 
-    def insert(self, word, definition):
-        pass
 
-
-    def delete(self, query):
-        pass
-
+class Corpus(forest.Tree):
 
     def suggest(self, query):
+        '''
+        Suggestion is made based on which node is closest to where query might have been found.
+        '''
         pass
-
+    
+    
 
 
 if __name__ == '__main__':
-    pass
+    ws = workspacelib.Workspace(paths=['data'], verbose=1)
+
+    corpus = Corpus().fromTextFile(filepath='data/words_sample.txt')
