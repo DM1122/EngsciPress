@@ -8,7 +8,7 @@ from Forest import forest
 
 
 
-class Corpus(forest.Tree):
+class Corpus(forest.BSTree):
 
     def suggest(self, query):
         '''
