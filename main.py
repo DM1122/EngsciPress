@@ -2,7 +2,7 @@ import praw
 import random
 
 import sys
-sys.path.append('C:\\Users\\DMara\\Documents\\_Workbench')
+sys.path.append('D:\\Workbench\\.repos')
 from Workspace import workspacelib
 from Forest import forest
 
@@ -20,6 +20,9 @@ class Corpus(forest.BSTree):
 
 
 if __name__ == '__main__':
-    ws = workspacelib.Workspace(paths=['data'], verbose=1)
+    ws = workspacelib.Workspace(paths=['temp', 'temp/drawings'], verbose=1)
+    ws.reset()
 
-    corpus = Corpus().fromTextFile(filepath='data/words_sample.txt')
+    corpus = Corpus()
+    corpus.fromJSON(filepath='data/dictionary_sample.json')
+    corpus.draw()
