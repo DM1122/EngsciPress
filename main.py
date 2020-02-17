@@ -6,6 +6,8 @@ sys.path.append('D:\\Workbench\\.repos')
 from Workspace import workspacelib
 from Forest import forest
 
+import ui
+
 
 
 class Corpus(forest.BSTree):
@@ -20,9 +22,13 @@ class Corpus(forest.BSTree):
 
 
 if __name__ == '__main__':
-    ws = workspacelib.Workspace(paths=['temp', 'temp/drawings'], verbose=1)
+    ws = workspacelib.Workspace(paths=['temp', 'temp/drawings'], verbose=0)
     ws.reset()
 
+    
     corpus = Corpus()
-    corpus.fromJSON(filepath='data/dictionary_sample.json')
-    corpus.draw()
+    ui = ui.GUI(corpus)
+
+    ui.master.mainloop()
+    
+    
