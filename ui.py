@@ -44,13 +44,11 @@ class GUI:
         #endregion
 
         #region Ops Frame
-        self.load_button = tkinter.Button(self.ops_frame, text='Import', command=self.load)
-        
-        self.delete_button = tkinter.Button(self.ops_frame, text='Delete', command=self.delete)
-
-        self.add_button = tkinter.Button(self.ops_frame, text='Add', command=self.add)
-
-        self.clear_button = tkinter.Button(self.ops_frame, text='Clear', command=self.clear)
+        self.load_button = tkinter.Button(self.ops_frame, width=5, height=1, text='Import', command=self.load)
+        self.delete_button = tkinter.Button(self.ops_frame, width=5, height=1, text='Delete', command=self.delete)
+        self.add_button = tkinter.Button(self.ops_frame, width=5, height=1, text='Add', command=self.add)
+        self.clear_button = tkinter.Button(self.ops_frame, width=5, height=1, text='Clear', command=self.clear)
+        self.stats_button = tkinter.Button(self.ops_frame, width=5, height=1, text='Stats', command=self.showStats)
         #endregion
 
         #region Lookup Frame        
@@ -143,7 +141,11 @@ class GUI:
             tkinter.messagebox.showinfo(title='Clear Dictionary', message='Dictionary cleared')
 
 
+    def showStats(self):
+        size = 'Corpus Size: {}'.format(self.corpus.getSize())
+        stats_str = size
 
+        tkinter.messagebox.showinfo(title='Statistics', message=stats_str)
 
 
 if __name__ == '__main__':
