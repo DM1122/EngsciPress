@@ -1,5 +1,5 @@
 import tkinter
-from tkinter import filedialog
+from tkinter import filedialog, simpledialog
 
 import sys
 sys.path.append('D:\\Workbench\\.repos')
@@ -16,8 +16,8 @@ class GUI:
         self.master.title('Dictionary Applet')
         self.master.iconbitmap('ui/book_icon.ico')
         
-        self.intro_label = tkinter.Label(self.master, text='Welcome!')
-        self.intro_label.grid(row=0, column=0, sticky=tkinter.W)
+        self.intro_label = tkinter.Label(self.master, anchor='w', text='Welcome! Get started by importing a JSON dictionary or creating your own')
+        self.intro_label.grid(row=0, column=0)
 
         #region Frames
         self.browser_frame = tkinter.Frame(self.master)
@@ -35,11 +35,12 @@ class GUI:
 
 
         #region Browser Frame
-        self.search_entry = tkinter.Entry(self.browser_frame)
+        self.search_entry = tkinter.Entry(self.browser_frame, width=20)
 
-        self.search_button = tkinter.Button(self.browser_frame, text='Search', command=self.search)
+        self.search_button = tkinter.Button(self.browser_frame, width=16, text='Search', command=self.search)
 
-        self.dictionary_listbox = tkinter.Listbox(self.browser_frame, selectmode=tkinter.SINGLE)
+        self.dictionary_listbox = tkinter.Listbox(self.browser_frame, height=10, width=20, selectmode=tkinter.SINGLE)
+        self.dictionary_listbox.bind('<<ListboxSelect>>', self.printDefiniton)
         #endregion
 
         #region Ops Frame
@@ -48,36 +49,25 @@ class GUI:
         self.delete_button = tkinter.Button(self.ops_frame, text='Delete', command=self.delete)
 
         self.add_button = tkinter.Button(self.ops_frame, text='Add', command=self.add)
+
+        self.clear_button = tkinter.Button(self.ops_frame, text='Clear', command=self.clear)
         #endregion
 
         #region Lookup Frame        
-        self.definition_label = tkinter.Label(self.lookup_frame, text='Definition:')
-        self.definition_text = tkinter.Text(self.lookup_frame)
+        self.definition_label = tkinter.Label(self.lookup_frame, anchor='w', text='Definition:')
+        self.definition_text = tkinter.Text(self.lookup_frame, height=15, width=20, wrap='word')
         #endregion
 
         #region Console Frame
-        self.log_label = tkinter.Label(self.console_frame, text='Console:')
-        self.log = tkinter.Text(self.console_frame)
+        self.log_label = tkinter.Label(self.console_frame, anchor='w', text='Console:')
+        self.log = tkinter.Text(self.console_frame, height=2, width=50)
         #endregion
 
         for frame in self.frames:
             for widget in frame.children:
                 frame.children[widget].pack()
 
-        #region Layout
-        # self.search_entry.grid(row=2, column=1, sticky=tkinter.W)
-        # self.search_button.grid(row=2, column=2, sticky=tkinter.W)
-        # self.dictionary_listbox.grid(row=3, column=1, sticky=tkinter.W)
-        # self.load_button.grid(row=3, column=2)
-        # self.log_label.grid(row=5, column=1, sticky=tkinter.W)
-        # self.log.grid(row=6, column=1, columnspan=3, sticky=tkinter.W)
-        # self.add_button.grid(row=4, column=2)
-        # self.delete_button.grid(row=5, column=2)
-        # self.definition_label.grid(row=2, column=3)
-        # self.definition_text.grid(row=3, column=3, rowspan=1)
-        #endregion
 
-    
     def load(self):
         filepath = tkinter.filedialog.askopenfilename(title='Select a dictionary file to import', filetypes=(('JSON Files', '*.json'),))
         self.printlog('Importing "{}"'.format(filepath))
@@ -88,12 +78,21 @@ class GUI:
 
     def search(self):
         query = self.search_entry.get()
-        self.printlog('Searching for {} in dictionary'.format(query))
-        print(self.corpus.search(query))
+
+        if query:
+            self.printlog('Searching for "{}" in dictionary'.format(query))
+            
+            result = self.corpus.search(query)
+            if result:
+                index = self.dictionary_listbox.get(0, 'end').index(query)
+                self.dictionary_listbox.SelectedIndex = index  
+            else:
+                tkinter.messagebox.showwarning(title='Warning', message='"{}" was not found in dictionary!'.format(query))
 
     
     def printlog(self, text):
         self.log.insert(tkinter.INSERT, text+'\n')
+        self.log.see('end')
 
 
     def refresh(self):
@@ -103,6 +102,7 @@ class GUI:
         for node in nodes:
             self.dictionary_listbox.insert(tkinter.END, node.data[0])
 
+
     def delete(self):
         idx = self.dictionary_listbox.curselection()
         key = self.dictionary_listbox.get(idx)
@@ -110,10 +110,37 @@ class GUI:
 
         # self.corpus.delete(key)
 
-    def add(self):
-        self.printlog('Adding "{}" from dictionary'.format('x'))
 
-        # self.corpus.add(key)
+    def add(self):
+        key = tkinter.simpledialog.askstring(title='Add word', prompt='Please enter new key word')
+        if not key: return
+        val = tkinter.simpledialog.askstring(title='Add word', prompt='Please enter key definition')
+        if not val: return
+
+        self.printlog('Adding "{}" to dictionary'.format(key))
+
+        data = (key, val)
+
+        self.corpus.insert(data)
+        self.refresh()
+
+
+    def printDefiniton(self, event):
+        self.definition_text.delete(index1='1.0', index2='end')
+
+        index = int(event.widget.curselection()[0])
+        value = event.widget.get(index)
+
+        definition = self.corpus.search(value).data[1]
+        self.definition_text.insert(index='1.0', chars=definition)
+
+
+    def clear(self):
+        result = tkinter.messagebox.askokcancel(title='Clear Dictionary', message='WARNING: You are about to delete the dictionary')
+
+        if result == True:
+            # delete corpus
+            tkinter.messagebox.showinfo(title='Clear Dictionary', message='Dictionary cleared')
 
 
 
