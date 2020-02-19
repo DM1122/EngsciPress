@@ -16,31 +16,41 @@ class GUI:
         self.master.title('Dictionary Applet')
         self.master.iconbitmap('ui/book_icon.ico')
         
-        self.intro_label = tkinter.Label(self.master, anchor='w', text='Welcome! Get started by importing a JSON dictionary or creating your own')
-        self.intro_label.grid(row=0, column=0)
-
         #region Frames
+        self.header_frame = tkinter.Frame(self.master)
         self.browser_frame = tkinter.Frame(self.master)
         self.ops_frame = tkinter.Frame(self.master)
         self.lookup_frame = tkinter.Frame(self.master)
         self.console_frame = tkinter.Frame(self.master)
+        self.footer_frame = tkinter.Frame(self.master)
 
+        self.header_frame.grid(row=0, column=0, columnspan=3)
         self.browser_frame.grid(row=1, column=0)
         self.ops_frame.grid(row=1, column=1)
         self.lookup_frame.grid(row=1, column=2)
-        self.console_frame.grid(row=2, column=0)
+        self.console_frame.grid(row=2, column=0, columnspan=3)
+        self.header_frame.grid(row=3, column=0, columnspan=3)
 
-        self.frames = (self.browser_frame, self.ops_frame, self.lookup_frame, self.console_frame)           # EXPERIMENTAL
+        self.frames = (self.header_frame, self.browser_frame, self.ops_frame, self.lookup_frame, self.console_frame, self.footer_frame)           # EXPERIMENTAL
+        #endregion
+
+
+        #region Header Frame
+        self.header_label = tkinter.Label(self.header_frame, text='Welcome! Get started by importing a JSON dictionary or creating your own')
+
+        self.header_label.pack(side='left')
         #endregion
 
 
         #region Browser Frame
-        self.search_entry = tkinter.Entry(self.browser_frame, width=20)
-
-        self.search_button = tkinter.Button(self.browser_frame, width=16, text='Search', command=self.search)
-
+        self.search_entry = tkinter.Entry(self.browser_frame, width=10)
+        self.search_button = tkinter.Button(self.browser_frame, width=5, text='Search', command=self.search)
         self.dictionary_listbox = tkinter.Listbox(self.browser_frame, height=10, width=20, selectmode=tkinter.SINGLE)
         self.dictionary_listbox.bind('<<ListboxSelect>>', self.printDefiniton)
+
+        self.search_entry.grid(row=0, column=0)
+        self.search_button.grid(row=0, column=1)
+        self.dictionary_listbox.grid(row=1, column=0, columnspan=2)
         #endregion
 
         #region Ops Frame
@@ -49,21 +59,41 @@ class GUI:
         self.add_button = tkinter.Button(self.ops_frame, width=5, height=1, text='Add', command=self.add)
         self.clear_button = tkinter.Button(self.ops_frame, width=5, height=1, text='Clear', command=self.clear)
         self.stats_button = tkinter.Button(self.ops_frame, width=5, height=1, text='Stats', command=self.showStats)
+
+        self.load_button.pack()
+        self.delete_button.pack()
+        self.add_button.pack()
+        self.clear_button.pack()
+        self.stats_button.pack()
         #endregion
 
         #region Lookup Frame        
         self.definition_label = tkinter.Label(self.lookup_frame, anchor='w', text='Definition:')
         self.definition_text = tkinter.Text(self.lookup_frame, height=15, width=20, wrap='word')
+
+        self.definition_label.pack(side='left')
+        self.definition_text.pack()
         #endregion
 
         #region Console Frame
         self.log_label = tkinter.Label(self.console_frame, anchor='w', text='Console:')
         self.log = tkinter.Text(self.console_frame, height=2, width=50)
+
+        self.log_label.pack(side='left')
+        self.log.pack()
         #endregion
 
-        for frame in self.frames:
-            for widget in frame.children:
-                frame.children[widget].pack()
+
+        #region Footer Frame
+        self.footer_label = tkinter.Label(self.footer_frame, text='David Maranto | 2020')
+
+        self.footer_label.pack(side='right')
+        #endregion
+
+
+        # for frame in self.frames:
+        #     for widget in frame.children:
+        #         frame.children[widget].pack()
 
 
     def load(self):
