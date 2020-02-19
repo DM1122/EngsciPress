@@ -59,12 +59,14 @@ class GUI:
         self.add_button = tkinter.Button(self.ops_frame, width=5, height=1, text='Add', command=self.add)
         self.clear_button = tkinter.Button(self.ops_frame, width=5, height=1, text='Clear', command=self.clear)
         self.stats_button = tkinter.Button(self.ops_frame, width=5, height=1, text='Stats', command=self.showStats)
+        self.export_button = tkinter.Button(self.ops_frame, width=5, height=1, text='Export', command=self.export)
 
         self.load_button.pack()
         self.delete_button.pack()
         self.add_button.pack()
         self.clear_button.pack()
         self.stats_button.pack()
+        self.export_button.pack()
         #endregion
 
         #region Lookup Frame        
@@ -176,6 +178,13 @@ class GUI:
         stats_str = size
 
         tkinter.messagebox.showinfo(title='Statistics', message=stats_str)
+
+    def export(self):
+        dirpath = tkinter.filedialog.askdirectory(title='Export')
+        self.corpus.toTXT(dirpath)
+        tkinter.messagebox.showinfo(title='Export', message='Corpus has been exported!')
+
+
 
 
 if __name__ == '__main__':

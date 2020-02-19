@@ -18,6 +18,22 @@ class Corpus(forest.BSTree):
         '''
         pass
     
+
+    def toTXT(self, dirpath):
+        '''
+        Exports corpus keys to textfile
+        '''
+
+        filename = dirpath+'/corpus.txt'
+
+        nodes = self.traverse(mode='in')
+        keys = [node.data[0] for node in nodes]
+
+        with open(filename, 'w') as fil:
+            for node in nodes:
+                fil.write('{}: {}\n'.format(node.data[0], node.data[1]))
+
+    
     
 
 
