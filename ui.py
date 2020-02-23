@@ -1,5 +1,5 @@
 import tkinter
-from tkinter import filedialog, simpledialog
+from tkinter import filedialog, simpledialog, ttk
 
 import sys
 sys.path.append('D:\\Workbench\\.repos')
@@ -15,14 +15,27 @@ class GUI:
 
         self.master.title('Dictionary Applet')
         self.master.iconbitmap('ui/book_icon.ico')
-        
-        #region Frames
-        self.header_frame = tkinter.Frame(self.master)
-        self.browser_frame = tkinter.Frame(self.master)
-        self.ops_frame = tkinter.Frame(self.master)
-        self.lookup_frame = tkinter.Frame(self.master)
-        self.console_frame = tkinter.Frame(self.master)
-        self.footer_frame = tkinter.Frame(self.master)
+
+        #region Tabs
+        self.tabControl = tkinter.ttk.Notebook(self.master)
+
+        self.corpus_tab = tkinter.ttk.Frame(self.tabControl)
+        self.tabControl.add(self.corpus_tab, text='Corpus')
+
+        self.ngram_tab = tkinter.ttk.Frame(self.tabControl)
+        self.tabControl.add(self.ngram_tab, text='Ngram')
+
+        self.tabControl.pack(expan=1, fill='both')
+         #endregion
+
+
+        #region Corpus Frames
+        self.header_frame = tkinter.Frame(self.corpus_tab)
+        self.browser_frame = tkinter.Frame(self.corpus_tab)
+        self.ops_frame = tkinter.Frame(self.corpus_tab)
+        self.lookup_frame = tkinter.Frame(self.corpus_tab)
+        self.console_frame = tkinter.Frame(self.corpus_tab)
+        self.footer_frame = tkinter.Frame(self.corpus_tab)
 
         self.header_frame.grid(row=0, column=0, columnspan=3)
         self.browser_frame.grid(row=1, column=0)
@@ -30,8 +43,18 @@ class GUI:
         self.lookup_frame.grid(row=1, column=2)
         self.console_frame.grid(row=2, column=0, columnspan=3)
         self.header_frame.grid(row=3, column=0, columnspan=3)
+        #endregion
 
-        self.frames = (self.header_frame, self.browser_frame, self.ops_frame, self.lookup_frame, self.console_frame, self.footer_frame)           # EXPERIMENTAL
+        #region Ngram Frames
+        self.header_frame_ngram = tkinter.Frame(self.ngram_tab)
+        self.config_frame_ngram = tkinter.Frame(self.ngram_tab)
+        self.generate_frame_ngram = tkinter.Frame(self.ngram_tab)
+        self.footer_frame_ngram = tkinter.Frame(self.ngram_tab)
+
+        self.header_frame_ngram.grid(row=0, column=0)
+        self.config_frame_ngram.grid(row=1, column=0)
+        self.generate_frame_ngram.grid(row=2, column=0)
+        self.footer_frame_ngram.grid(row=3, column=0)
         #endregion
 
 
@@ -93,9 +116,16 @@ class GUI:
         #endregion
 
 
-        # for frame in self.frames:
-        #     for widget in frame.children:
-        #         frame.children[widget].pack()
+        #region Header Frame Ngram
+        self.header_label_ngram = tkinter.Label(self.header_frame_ngram, text='Ngram viewer')
+
+        self.header_label_ngram.pack(side='left')
+        #endregion
+
+        #region Footer Frame Ngram
+        
+        #endregion
+
 
 
     def load(self):
