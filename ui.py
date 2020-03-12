@@ -215,7 +215,5 @@ class GUI:
         tkinter.messagebox.showinfo(title='Export', message='Corpus has been exported!')
 
 
-
-
 if __name__ == '__main__':
     pass
