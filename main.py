@@ -13,6 +13,9 @@ import ui
 
 class Corpus(forest.BSTree):
 
+    def batchImport(self, dir):
+        pass
+
     def suggest(self, query):
         '''
         Suggestion is made based on which node is closest to where query might have been found.
