@@ -25,7 +25,7 @@ class NGram:
         return len(self.model)
 
 
-    def buildFromReddit(self, sub, limit):
+    def buildFromReddit(self, sub, limit=100):
         '''
         Constructs an NGram model from reddit posts. Currently only supports scraping post titles.
         '''
