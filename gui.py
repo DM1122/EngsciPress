@@ -63,3 +63,8 @@ class Margin(tkinter.Frame):
     def __init__(self, parent, label=None, anc='w'):
         tkinter.Frame.__init__(self, parent)
         self.label = tkinter.Label(self, text=label); self.label.pack(side='top', anchor=anc)
+
+
+class ContentFrame(tkinter.Frame):
+    def __init__(self, parent, controller):
+        tkinter.Frame.__init__(self, parent)
