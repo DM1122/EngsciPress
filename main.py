@@ -82,13 +82,26 @@ class CorpusTab(tkinter.ttk.Frame):
         def search(self):
             query = self.searchbox.get()
             if query:
-                result = self.controller.corpus.search(query)
-                if result:
-                    index = self.listbox.get(0, 'end').index(query)
-                    self.listbox.SelectedIndex = index 
+                results = self.controller.corpus.search_all(query)
+                self.listbox.selection_clear(0, 'end')
+                if results != []:
+                    if len(results) == 1:
+                        index = self.listbox.get(0, 'end').index(query)
+                        self.listbox.see(index)
+                        self.listbox.select_set(index) #This only sets focus on the first item.
+                        self.listbox.event_generate('<<ListboxSelect>>')
+                    else:
+                        data_raw = [result.data for result in results]
+                        data_joined = ['\n'.join(element) for element in data_raw]
+                        data_str = '\n================\n'.join(data_joined)
+                        self.controller.map['.!notebook.!corpustab.!frame.!lookupframe.!display'].write(data_str)
+                        tkinter.messagebox.showinfo(title='Corpus Search', message='{} results found.\nScroll to see them all.'.format(len(results)))
                 else:
-                    tkinter.messagebox.showwarning(title='Warning', message='"{}" was not found in corpus!'.format(query))
-
+                    suggestions = self.controller.corpus.suggest(query)[:3]
+                    suggestions_data = [suggestion.data[0] for suggestion in suggestions]
+                    suggestions_str = '\n'.join(suggestions_data)
+                    tkinter.messagebox.showwarning(title='Warning', message='"{}" was not found in corpus!\n Did you mean...\n{}'.format(query, suggestions_str))
+            
 
         def define(self, event):
             '''
@@ -103,12 +116,7 @@ class CorpusTab(tkinter.ttk.Frame):
             string = '\n'.join(result.data)
             self.controller.map['.!notebook.!corpustab.!frame.!lookupframe.!display'].write(string)
 
-            # key = event.widget.get(index)
 
-            # node = self.controller.corpus.search(key)
-            # string = '\n'.join(node.data)
-            # print(string)
-            # self.controller.map['.!notebook.!corpustab.!frame.!lookupframe.!display'].write(string)
 
 
     class OpsFrame(tkinter.LabelFrame):

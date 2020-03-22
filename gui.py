@@ -53,8 +53,7 @@ class Display(tkinter.Frame):
 
     def write(self, text):
         self.disp.delete('1.0','end')
-        self.disp.insert('insert', text)   # tkinter.INSERT
-        # self.log.see('end')
+        self.disp.insert('insert', text)    
 
 
 class Margin(tkinter.Frame):
