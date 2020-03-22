@@ -49,14 +49,12 @@ class Display(tkinter.Frame):
         tkinter.Frame.__init__(self, parent)
     
         self.label = tkinter.Label(self, text=label); self.label.pack(side='top', anchor='w')
-        self.disp = tkinter.Text(self, height=size[0], width=size[1]); self.disp.pack(side='top')
+        self.disp = tkinter.Text(self, height=size[0], width=size[1], wrap='word'); self.disp.pack(side='top')
 
-    def write(text='Lorem ipsum'):
-        self.disp.insert('insert', text+'\n')   # tkinter.INSERT
-        # self.log.see('end')
-    
-    def clear():
+    def write(self, text):
         self.disp.delete('1.0','end')
+        self.disp.insert('insert', text)   # tkinter.INSERT
+        # self.log.see('end')
 
 
 class Margin(tkinter.Frame):

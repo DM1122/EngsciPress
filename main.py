@@ -48,35 +48,6 @@ class Master(tkinter.Tk):
         return map
 
 
-    def search(self):
-        query = self.search_entry.get()
-
-        if query:
-            self.printlog('Searching for "{}" in dictionary'.format(query))
-            
-            result = self.corpus.search(query)
-            if result:
-                index = self.dictionary_listbox.get(0, 'end').index(query)
-                self.dictionary_listbox.SelectedIndex = index  
-            else:
-                tkinter.messagebox.showwarning(title='Warning', message='"{}" was not found in dictionary!'.format(query))
-
-    
-    def printlog(self, text):
-        self.log.insert(tkinter.INSERT, text+'\n')
-        self.log.see('end')
-
-
-    def printDefiniton(self, event):
-        self.definition_text.delete(index1='1.0', index2='end')
-
-        index = int(event.widget.curselection()[0])
-        value = event.widget.get(index)
-
-        definition = self.corpus.search(value).data
-        self.definition_text.insert(index='1.0', chars=definition)
-
-
 class CorpusTab(tkinter.ttk.Frame):
 
     class BrowserFrame(tkinter.LabelFrame):
@@ -109,13 +80,35 @@ class CorpusTab(tkinter.ttk.Frame):
 
 
         def search(self):
-            pass
+            query = self.searchbox.get()
+            if query:
+                result = self.controller.corpus.search(query)
+                if result:
+                    index = self.listbox.get(0, 'end').index(query)
+                    self.listbox.SelectedIndex = index 
+                else:
+                    tkinter.messagebox.showwarning(title='Warning', message='"{}" was not found in corpus!'.format(query))
 
 
-        def define(self):
-            pass
+        def define(self, event):
+            '''
+            Define word on listbox select.
+            '''
 
+            index = int(event.widget.curselection()[0])
 
+            nodes = self.controller.corpus.traverse(mode='in')
+
+            result = nodes[index]
+            string = '\n'.join(result.data)
+            self.controller.map['.!notebook.!corpustab.!frame.!lookupframe.!display'].write(string)
+
+            # key = event.widget.get(index)
+
+            # node = self.controller.corpus.search(key)
+            # string = '\n'.join(node.data)
+            # print(string)
+            # self.controller.map['.!notebook.!corpustab.!frame.!lookupframe.!display'].write(string)
 
 
     class OpsFrame(tkinter.LabelFrame):
@@ -130,7 +123,8 @@ class CorpusTab(tkinter.ttk.Frame):
             self.draw_button = tkinter.Button(self, text='Draw', width=5, height=1, command=self.draw); self.draw_button.pack(side='top')
             self.export_button = tkinter.Button(self, text='Export', width=5, height=1, command=self.export); self.export_button.pack(side='top')
             self.stats_button = tkinter.Button(self, text='Stats', width=5, height=1, command=self.stats); self.stats_button.pack(side='top')
-            
+
+
         def load(self):
             filepath = tkinter.filedialog.askopenfilename(title='Select a dictionary file to import', filetypes=(('CSV Files', '*.csv'),))
             if not filepath: return
@@ -187,23 +181,21 @@ class CorpusTab(tkinter.ttk.Frame):
             tkinter.messagebox.showinfo(title='Statistics', message=size)
 
 
-
-
-
-
     class LookupFrame(tkinter.LabelFrame):
         def __init__(self, parent, controller):
             tkinter.LabelFrame.__init__(self, parent, text='Lookup')
             self.controller = controller
             
             self.display = gui.Display(self, size=(10,25)); self.display.pack(side='top')
+
+            self.display.write(text='Welcome! Get started by loading a dictionary in CSV format or start creating your own.')
         
 
     def __init__(self, parent, controller):
         tkinter.ttk.Frame.__init__(self, parent)
         self.controller = controller
 
-        self.header = gui.Margin(self, label='Welcome! Get started by loading a CSV dict or creating your own.', anc='w'); self.header.pack(side='top', fill='both')
+        self.header = gui.Margin(self, label='Corpus builder', anc='w'); self.header.pack(side='top', fill='both')
 
         self.content = tkinter.Frame(self); self.content.pack(side='top', fill='both')
 
