@@ -59,7 +59,7 @@ class NGram:
 
         if seed != None:
             if seed not in [gram[0] for gram in self.model]:
-                raise Exception('Seed not in model!')
+                raise ValueError('Seed not in model!')
         else:
             tokens = [gram[0] for gram in self.model]
             seed = random.choice(tokens)

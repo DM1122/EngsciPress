@@ -186,7 +186,7 @@ class CorpusTab(tkinter.ttk.Frame):
 
         def stats(self):
             size = 'Corpus Size: {}'.format(self.controller.corpus.getSize())
-            tkinter.messagebox.showinfo(title='Statistics', message=size)
+            tkinter.messagebox.showinfo(title='Corpus Stats', message=size)
 
 
     class LookupFrame(tkinter.LabelFrame):
@@ -221,17 +221,26 @@ class NgramTab(tkinter.ttk.Frame):
             tkinter.LabelFrame.__init__(self, parent, text='Build')
             self.controller = controller
 
-            self.ngram_len_spinbox = gui.LabelSpinbox(self, label='Ngram Length', startend=(0,8)); self.ngram_len_spinbox.pack(side='left')
-            self.scrape_count_spinbox = gui.LabelSpinbox(self, label='Scrape Count', startend=(0,1000)); self.scrape_count_spinbox.pack(side='left')
+            self.ngram_len_spinbox = gui.LabelSpinbox(self, label='Gram Length', startend=(2,8)); self.ngram_len_spinbox.pack(side='left')
+            self.scrape_count_spinbox = gui.LabelSpinbox(self, label='Scrape Count', startend=(1,1000)); self.scrape_count_spinbox.pack(side='left')
             self.restrict_to_corpus_checkbox = gui.LabelCheckbox(self, label='Only allow words in corpus'); self.restrict_to_corpus_checkbox.pack(side='left')
             self.build_button = tkinter.Button(self, text='Build', command=self.build); self.build_button.pack(side='bottom')
         
-        def build():
+        def build(self):
             '''
             Collects data from build frame and instantiates ngram model.
             '''
-            pass
-
+            self.controller.ngram = ngram.NGram(n=int(self.ngram_len_spinbox.get()))
+            self.controller.ngram.buildFromReddit(sub='casualconversation', limit=int(self.scrape_count_spinbox.get()))
+            
+            # disable build frame
+            for child in self.winfo_children():
+                child.configure(state='disable')
+            
+            # enable generation frame
+            for child in self.controller.map['.!notebook.!ngramtab.!frame.!generateframe'].winfo_children():
+                child.configure(state='normal')
+            
 
     class GenerateFrame(tkinter.LabelFrame):
         def __init__(self, parent, controller):
@@ -239,22 +248,72 @@ class NgramTab(tkinter.ttk.Frame):
             self.controller = controller
 
             self.seed_entry = gui.TextBoxInput(self, 'Seed'); self.seed_entry.pack(side='top')
+            self.seq_len_spinbox = gui.LabelSpinbox(self, label='Sequence Length', startend=(1,256)); self.seq_len_spinbox.pack(side='top')
             self.generate_button = tkinter.Button(self, text='Generate!', command=self.generate); self.generate_button.pack(side='top')
-            self.display = gui.Display(self, 'Ouput'); self.display.pack(side='top')
+            self.display = gui.Display(self, 'Output'); self.display.pack(side='top')
             self.reset_button = tkinter.Button(self, text='Reset', command=self.reset); self.reset_button.pack(side='top')
             self.stats_button = tkinter.Button(self, text='Stats', command=self.stats); self.stats_button.pack(side='top')
+
+            # disable frame by default
+            for child in self.winfo_children():
+                child.configure(state='disable')
         
-        def generate():
-            pass
 
-        def stats():
-            pass
+        def generate(self):
+            seed = None if self.seed_entry.get() == '' else self.seed_entry.get()
 
-        def reset():
+            try:
+                output = self.controller.ngram.generate(seed=seed, length=int(self.seq_len_spinbox.get()))
+
+                if self.controller.map['.!notebook.!ngramtab.!frame.!buildframe'].restrict_to_corpus_checkbox.get() == 1:
+
+                    output = output.split()
+
+                    output_filtered = []
+                    for word in output:
+
+
+                        if self.controller.corpus.search(query=word) != None or self.controller.corpus.search(query=word.capitalize()) != None:
+                            output_filtered.append(word)
+                
+                    try:
+                        output_filtered = ' '.join(output_filtered)
+                    except:
+                        output_filtered = output_filtered
+                    
+                    output = output_filtered
+
+                self.display.write(output)
+
+            except ValueError:
+                tkinter.messagebox.showinfo(title='Ngram Generation', message='Seed not in model!')
+            
+
+
+        def stats(self):
+            n = 'Gram Length: {}'.format(self.controller.ngram.n)
+            size = 'Ngram Size: {}'.format(self.controller.ngram.getSize())
+            
+            tkinter.messagebox.showinfo(title='Ngram Stats', message=n+'\n'+size)
+
+
+        def reset(self):
             '''
             Deletes ngram model and reactivates build frame.
             '''
-            pass
+            self.controller.ngram = None
+
+            # enable build frame
+            for child in self.controller.map['.!notebook.!ngramtab.!frame.!buildframe'].winfo_children():
+                child.configure(state='normal')
+
+            # disable generation frame
+            for child in self.winfo_children():
+                child.configure(state='disable')
+
+            tkinter.messagebox.showinfo(title='Ngram Builder', message='Ngram model has been reset.')
+
+            
 
 
     def __init__(self, parent, controller):
