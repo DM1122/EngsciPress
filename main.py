@@ -9,6 +9,8 @@ from Forest import forest
 
 import corpus, ngram, gui
 
+import time
+
 
 
 class Master(tkinter.Tk):
@@ -156,9 +158,16 @@ class CorpusTab(tkinter.ttk.Frame):
             if self.controller.corpus.getSize() == 0:
                 return
             key = self.controller.map['.!notebook.!corpustab.!frame.!browserframe'].getSelection()
-            print(key) ####WIP
-            self.controller.corpus.delete(key)
-            self.controller.map['.!notebook.!corpustab.!frame.!browserframe'].refresh()
+            node = self.controller.corpus.search(key)
+
+            if node:
+                print(node)
+                self.controller.corpus.delete(node)
+                self.controller.map['.!notebook.!corpustab.!frame.!browserframe'].refresh()
+                tkinter.messagebox.showinfo(title='Delete Key', message='Key "{}" deleted.'.format(key))
+            else:
+                tkinter.messagebox.showinfo(title='Delete Key', message='No such key "{}" found.'.format(key))
+
 
 
         def clear(self):
@@ -179,9 +188,9 @@ class CorpusTab(tkinter.ttk.Frame):
 
 
         def export(self):
-            filepath = tkinter.filedialog.asksaveasfilename(title='Export')
+            filepath = tkinter.filedialog.asksaveasfilename(title='Export Corpus')
             self.controller.corpus.toCSV(filepath)
-            tkinter.messagebox.showinfo(title='Export', message='Corpus has been exported!')
+            tkinter.messagebox.showinfo(title='Export Corpus', message='Corpus has been exported!')
 
 
         def stats(self):
@@ -253,6 +262,7 @@ class NgramTab(tkinter.ttk.Frame):
             self.display = gui.Display(self, 'Output'); self.display.pack(side='top')
             self.reset_button = tkinter.Button(self, text='Reset', command=self.reset); self.reset_button.pack(side='top')
             self.stats_button = tkinter.Button(self, text='Stats', command=self.stats); self.stats_button.pack(side='top')
+            self.export_button = tkinter.Button(self, text='Export', command=self.export); self.export_button.pack(side='top')
 
             # disable frame by default
             for child in self.winfo_children():
@@ -313,7 +323,11 @@ class NgramTab(tkinter.ttk.Frame):
 
             tkinter.messagebox.showinfo(title='Ngram Builder', message='Ngram model has been reset.')
 
-            
+
+        def export(self):
+            filepath = tkinter.filedialog.asksaveasfilename(title='Export Ngram')
+            self.controller.ngram.toCSV(filepath)
+            tkinter.messagebox.showinfo(title='Export Ngram', message='Ngram has been exported!')
 
 
     def __init__(self, parent, controller):

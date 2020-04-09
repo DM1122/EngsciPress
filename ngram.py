@@ -1,3 +1,4 @@
+import csv
 import praw
 import progress.bar
 import random
@@ -132,6 +133,18 @@ class NGram:
             del self.model[gram]
         
         self.updateProbs()
+
+
+    def toCSV(self, filepath):
+        with open(filepath, 'w', newline='') as fobj:
+            writer = csv.writer(fobj)
+
+            bar = progress.bar.Bar('Exporting ngram to CSV', max=self.getSize())
+            for gram in self.model:
+                print('{}| Count: {}| Prob: {}'.format(gram, self.model[gram]['count'], self.model[gram]['prob']))
+                writer.writerow(gram)
+                bar.next()
+            bar.finish()
 
 
 
